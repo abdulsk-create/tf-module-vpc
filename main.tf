@@ -2,10 +2,9 @@ resource "aws_vpc" "main" {
   cidr_block = var.cidr
 }
 
-resource "aws_subnet" "main" {
+module "subnets" {
+  source = "./subnets"
   for_each = var.subnets
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.cidr
-  availability_zone = ""
-
+  subnets = each.value
+  vpc_id = aws_vpc.main.id
 }
