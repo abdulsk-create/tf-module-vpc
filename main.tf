@@ -24,6 +24,25 @@ resource "aws_route" "igw" {
   gateway_id = aws_internet_gateway.igw.id
 }
 
+resource "aws_eip" "ngw" {
+  for_each = lookup(lookup(module.subnets, "public", null), "subnet_ids", null)
+  domain   = "vpc"
+}
+
+resource "aws_nat_gateway" "ngw" {
+  for_each = lookup(lookup(module.subnets, "public", null), "subnet_ids", null)
+  allocation_id = lookup(aws_eip.ngw, each.value["id"], null)
+  subnet_id     = each.value["id"]
+
+  tags = {
+    Name = "gw NAT"
+  }
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.example]
+}
+
 output "subnet" {
   value = module.subnets
 }
