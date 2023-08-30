@@ -70,7 +70,7 @@ resource "aws_instance" "main" {
   subnet_id = local.app_subnet_ids[0]
 }
 
-resource "aws_security_group" "main" {
+resource "aws_security_group" "allow_tls" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.main.id
